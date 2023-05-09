@@ -1,0 +1,13 @@
+version: "3"
+services:
+  postgres:
+    build: "./db"
+    volumes:
+      - "./db/initdb.d:/docker-entrypoint-initdb.d"
+      - "./tests/sql:/sql"
+      - "./db/data/postgresql:/var/lib/postgresql/data"
+    ports:
+      - "5444:5432"
+    environment:
+      - POSTGRES_PASSWORD=root_password123
+      - DB_BLOCKSCOUT_PASSWORD=blockscout_password123
