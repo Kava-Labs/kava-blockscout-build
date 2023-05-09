@@ -12,6 +12,8 @@ psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" <<-EOSQL
 
     \c blockscout_testing
 
+    GRANT ALL ON SCHEMA public TO blockscout_user;
+
     CREATE EXTENSION "pgtap";
     CREATE EXTENSION "pg_trgm";
     CREATE EXTENSION "btree_gist";
