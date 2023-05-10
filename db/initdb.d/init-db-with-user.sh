@@ -3,6 +3,8 @@
 set -e
 
 psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" <<-EOSQL
+    ALTER SYSTEM SET max_connections = 200;
+
     CREATE USER blockscout_user;
     CREATE DATABASE blockscout_testing ENCODING UTF8;
 

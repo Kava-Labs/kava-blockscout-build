@@ -8,8 +8,11 @@ WORKDIR /src
 RUN apt-get update \
   && apt-get install -y git
 
+COPY ./patches /src/patches
+
 RUN git clone --depth 1 --branch v${BLOCKSCOUT_VERSION}-beta https://github.com/blockscout/blockscout.git \
   && cd blockscout \
+  && git apply /src/patches/*.patch \
   && mix local.hex --force \
   && mix local.rebar --force \
   && mix deps.get --only prod \
@@ -19,6 +22,7 @@ FROM node:18 as frontend-builder
 
 WORKDIR /src
 COPY --from=backend-builder /src/blockscout/ /src/blockscout/
+COPY ./assets/kava-logo.png /src/blockscout/apps/block_scout_web/assets/static/images/kava-logo.png
 
 RUN cd blockscout/apps/block_scout_web/assets \
   && npm install \
