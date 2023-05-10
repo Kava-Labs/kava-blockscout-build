@@ -10,3 +10,10 @@ docker-compose up
 ```
 
 View localhost:4000
+
+# Remove containers and dbdata volume
+```
+docker-compose down -v
+```
+
+
