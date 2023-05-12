@@ -1,0 +1,26 @@
+From 058d705fa9efba767678d6d4cd6ce277e874c387 Mon Sep 17 00:00:00 2001
+From: Nick DeLuca <nickdeluca08@gmail.com>
+Date: Thu, 24 Feb 2022 14:43:42 -0700
+Subject: [PATCH] modify migration to not attempt extension creation if it
+ already exists
+
+---
+ .../migrations/20190403080447_add_full_text_search_tokens.exs   | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/apps/explorer/priv/repo/migrations/20190403080447_add_full_text_search_tokens.exs b/apps/explorer/priv/repo/migrations/20190403080447_add_full_text_search_tokens.exs
+index a4d642f54..a55901c4f 100644
+--- a/apps/explorer/priv/repo/migrations/20190403080447_add_full_text_search_tokens.exs
++++ b/apps/explorer/priv/repo/migrations/20190403080447_add_full_text_search_tokens.exs
+@@ -2,7 +2,7 @@ defmodule Explorer.Repo.Migrations.AddFullTextSearchTokens do
+   use Ecto.Migration
+ 
+   def up do
+-    execute("CREATE EXTENSION pg_trgm")
++    execute("CREATE EXTENSION IF NOT EXISTS pg_trgm")
+ 
+     execute("""
+     CREATE INDEX tokens_trgm_idx ON tokens USING GIN (to_tsvector('english', symbol || ' ' || name))
+-- 
+2.30.2
+
