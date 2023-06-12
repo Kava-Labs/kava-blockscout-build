@@ -21,15 +21,21 @@ RUN apt-get update \
 #
 COPY ./patches /src/patches
 
-# Clone the blockscout, apply patches, install prod dependencies, and compile with MIX_ENV=prod
-# The order of these steps must be kept the same
-RUN git clone --depth 1 --branch v${BLOCKSCOUT_VERSION}-beta https://github.com/blockscout/blockscout.git \
-  && cd blockscout \
-  && git apply /src/patches/*.patch \
-  && mix local.hex --force \
-  && mix local.rebar --force \
-  && mix deps.get --only prod \
-  && MIX_ENV=prod mix compile
+# The order of the below steps must be kept the same
+#
+# Clone the  blockscout repository
+RUN git clone --depth 1 --branch v${BLOCKSCOUT_VERSION}-beta https://github.com/blockscout/blockscout.git
+WORKDIR blockscout
+# apply patches
+RUN git apply /src/patches/*.patch
+RUN mix local.hex --force
+RUN mix local.rebar --force
+# install prod dependencies
+RUN mix deps.get
+# compile minimal production optimized version of application
+RUN mix compile
+# The order of the above steps must be kept the same
+#
 
 #
 # The frontend-builder copies builds the block_scout_web frontend and installs solc for the explorer using npm.
