@@ -5,7 +5,7 @@ ARG BLOCKSCOUT_VERSION=5.1.4
 # The backend-builder uses the official exlixir docker image that contains
 # Elixir, Erlang, compatiable OTP version, and mix.
 #
-FROM elixir:1.14 as backend-builder
+FROM elixir:1.14-otp-25 as backend-builder
 ARG BLOCKSCOUT_VERSION
 
 WORKDIR /src
