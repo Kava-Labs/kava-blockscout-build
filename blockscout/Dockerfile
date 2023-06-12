@@ -5,26 +5,16 @@ ARG BLOCKSCOUT_VERSION=5.1.5
 # The backend-builder uses the official exlixir docker image that contains
 # Elixir, Erlang, compatiable OTP version, and mix.
 #
-FROM bitwalker/alpine-elixir-phoenix:1.14 as backend-builder
+FROM elixir:1.14-otp-25 as backend-builder
 ARG BLOCKSCOUT_VERSION
 
-RUN apk --no-cache --update add alpine-sdk gmp-dev automake libtool inotify-tools autoconf python3 file qemu-x86_64 git
-
-ENV GLIBC_REPO=https://github.com/sgerrand/alpine-pkg-glibc \
-    GLIBC_VERSION=2.30-r0 \
-    PORT=4000 \
-    MIX_ENV="prod" \
-    SECRET_KEY_BASE="RMgI4C1HSkxsEjdhtGMfwAHfyT6CKWXOgzCboJflfSm4jeAlic52io05KB6mqzc5"
-
-RUN set -ex && \
-    apk --update add libstdc++ curl ca-certificates && \
-    for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION}; \
-        do curl -sSL ${GLIBC_REPO}/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
-    apk add --allow-untrusted /tmp/*.apk && \
-    rm -v /tmp/*.apk && \
-    /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib
-
 WORKDIR /src
+
+# All elixir dependencies are already installed
+# We only need git to clone and apply patches
+RUN apt-get update \
+  && apt-get install -y git \
+  && rm -rf /var/lib/apt/lists/*
 
 # COPY patches first, since we want to apply after clone, but before compiling
 # This does force a re-clone if there are patch changes, but also reduces our layers.
@@ -41,9 +31,9 @@ RUN git apply /src/patches/*.patch
 RUN mix local.hex --force
 RUN mix local.rebar --force
 # install prod dependencies
-RUN mix deps.get
+RUN mix deps.get --only prod
 # compile minimal production optimized version of application
-RUN mix compile
+RUN MIX_ENV=prod mix compile
 # The order of the above steps must be kept the same
 #
 
