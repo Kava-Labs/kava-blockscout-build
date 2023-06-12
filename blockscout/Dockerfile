@@ -1,11 +1,11 @@
-# Raw version representing v5.1.4-beta
-ARG BLOCKSCOUT_VERSION=5.1.4
+# Raw version representing v5.1.5-beta
+ARG BLOCKSCOUT_VERSION=5.1.5
 
 #
 # The backend-builder uses the official exlixir docker image that contains
 # Elixir, Erlang, compatiable OTP version, and mix.
 #
-FROM elixir:1.14 as backend-builder
+FROM elixir:1.14-otp-25 as backend-builder
 ARG BLOCKSCOUT_VERSION
 
 WORKDIR /src
@@ -21,15 +21,21 @@ RUN apt-get update \
 #
 COPY ./patches /src/patches
 
-# Clone the blockscout, apply patches, install prod dependencies, and compile with MIX_ENV=prod
-# The order of these steps must be kept the same
-RUN git clone --depth 1 --branch v${BLOCKSCOUT_VERSION}-beta https://github.com/blockscout/blockscout.git \
-  && cd blockscout \
-  && git apply /src/patches/*.patch \
-  && mix local.hex --force \
-  && mix local.rebar --force \
-  && mix deps.get --only prod \
-  && MIX_ENV=prod mix compile
+# The order of the below steps must be kept the same
+#
+# Clone the  blockscout repository
+RUN git clone --depth 1 --branch v${BLOCKSCOUT_VERSION}-beta https://github.com/blockscout/blockscout.git
+WORKDIR blockscout
+# apply patches
+RUN git apply /src/patches/*.patch
+RUN mix local.hex --force
+RUN mix local.rebar --force
+# install prod dependencies
+RUN mix deps.get --only prod
+# compile minimal production optimized version of application
+RUN MIX_ENV=prod mix compile
+# The order of the above steps must be kept the same
+#
 
 #
 # The frontend-builder copies builds the block_scout_web frontend and installs solc for the explorer using npm.
