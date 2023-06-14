@@ -1,19 +1,9 @@
-# Kava Blocksout
+# Kava Blockscout Ethereum Explorer
 
-This repostiory contains a docker build for a Kava branded and configured Blockscout used to power explorer.kava.io.
+This repository contains a docker build for a Kava branded and configured Blockscout used to power explorer.kava.io.
 
-# Testing
+## Usage
 
-```
-npx hardhat node --hostname 0.0.0.0
-docker-compose up
-```
+## Development
 
-View localhost:4000
-
-# Remove containers and dbdata volume
-```
-docker-compose down -v
-```
-
-
+[DEVELOPMENT.md](./DEVELOPMENT.md)
