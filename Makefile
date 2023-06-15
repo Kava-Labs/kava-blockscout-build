@@ -10,15 +10,21 @@ include .env
 # so won't affect your login shell
 export $(shell sed 's/=.*//' .env)
 
+.PHONY: vendor-blockscout
+# download blockscout sources locally for building
+# custom versions of blockscout
+vendor-blockscout:
+	git submodule update --init --recursive
+
 .PHONY: build
 # build a development version docker image of the service
-build:
+build: vendor-blockscout
 	cd blockscout && \
 	docker build ./ -f Dockerfile -t ${IMAGE_NAME}:${LOCAL_IMAGE_TAG}
 
 .PHONY: publish
 # build a production version docker image of the service
-publish:
+publish: vendor-blockscout
 	cd blockscout && \
 	docker build ./ -f Dockerfile -t ${IMAGE_NAME}:${PRODUCTION_IMAGE_TAG}
 

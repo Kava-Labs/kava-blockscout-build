@@ -1,0 +1,12 @@
+diff --git a/apps/explorer/lib/explorer/repo/config_helper.ex b/apps/explorer/lib/explorer/repo/config_helper.ex
+index dd13d83a2..e8ad3f19c 100644
+--- a/apps/explorer/lib/explorer/repo/config_helper.ex
++++ b/apps/explorer/lib/explorer/repo/config_helper.ex
+@@ -17,6 +17,7 @@ defmodule Explorer.Repo.ConfigHelper do
+   ]
+ 
+   def get_db_config(opts) do
++    dbg(opts)
+     url_encoded = opts[:url] || System.get_env("DATABASE_URL")
+     url = url_encoded && URI.decode(url_encoded)
+     env_function = opts[:env_func] || (&System.get_env/1)
