@@ -22,6 +22,13 @@ publish:
 	cd blockscout && \
 	docker build ./ -f Dockerfile -t ${IMAGE_NAME}:${PRODUCTION_IMAGE_TAG}
 
+.PHONY: hotfix-release
+# build a production image using local sources and push it to the remote repository using tag `hotfix
+hotfix-release: publish
+	AWS_PROFILE=shared aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 843137275421.dkr.ecr.us-east-1.amazonaws.com && \
+	docker tag ${IMAGE_NAME}:${PRODUCTION_IMAGE_TAG} 843137275421.dkr.ecr.us-east-1.amazonaws.com/kava-blockscout:hotfix && \
+	docker push 843137275421.dkr.ecr.us-east-1.amazonaws.com/kava-blockscout:hotfix
+
 .PHONY: up
 # start dockerized versions of the service and it's dependencies
 up:
