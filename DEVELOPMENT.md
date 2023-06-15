@@ -92,6 +92,35 @@ npx hardhat node --hostname 0.0.0.0
 
 ## Debugging
 
+### Blockscout
+
+#### Print Debugging
+
+
+```bash
+git diff > ../patches/debug.patch
+git commit -m "[debug attempt message]"
+# repo base kava-blockscout-build/
+cd ../../
+make refresh
+```
+
+
+```bash
+  def get_db_config(opts) do
+    dbg(opts)
+    url_encoded = opts[:url] || System.get_env("DATABASE_URL")
+    url = url_encoded && URI.decode(url_encoded)
+    env_function = opts[:env_func] || (&System.get_env/1)
+
+    @postgrex_env_vars
+    |> get_env_vars(env_function)
+    |> Keyword.merge(extract_parameters(url))
+  end
+```
+
+![Blockscout print debug AWS ECS console output](./devdocs/images/blockscout_print_debug_example_output.png)
+
 ### Postgres
 
 ```bash
