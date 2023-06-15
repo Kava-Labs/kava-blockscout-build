@@ -1,0 +1,87 @@
+# execute these tasks when `make` with no target is invoked
+default: up
+
+# import environment file for setting or overriding
+# configuration used by this Makefile
+include .env
+
+# source all variables in environment file
+# This only runs in the make command shell
+# so won't affect your login shell
+export $(shell sed 's/=.*//' .env)
+
+.PHONY: vendor-blockscout
+# download blockscout sources locally for building
+# custom versions of blockscout
+vendor-blockscout:
+	git submodule update --init --recursive
+
+.PHONY: build
+# build a development version docker image of the service
+build: vendor-blockscout
+	cd blockscout && \
+	docker build ./ -f Dockerfile -t ${IMAGE_NAME}:${LOCAL_IMAGE_TAG}
+
+.PHONY: publish
+# build a production version docker image of the service
+publish: vendor-blockscout
+	cd blockscout && \
+	docker build ./ -f Dockerfile -t ${IMAGE_NAME}:${PRODUCTION_IMAGE_TAG}
+
+.PHONY: hotfix-release
+# build a production image using local sources and push it to the remote repository using tag `hotfix
+hotfix-release: publish
+	AWS_PROFILE=shared aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 843137275421.dkr.ecr.us-east-1.amazonaws.com && \
+	docker tag ${IMAGE_NAME}:${PRODUCTION_IMAGE_TAG} 843137275421.dkr.ecr.us-east-1.amazonaws.com/kava-blockscout:hotfix && \
+	docker push 843137275421.dkr.ecr.us-east-1.amazonaws.com/kava-blockscout:hotfix
+
+.PHONY: up
+# start dockerized versions of the service and it's dependencies
+up:
+	docker compose up -d
+
+.PHONY: down
+# stop the service and it's dependencies
+down:
+	docker compose down
+
+.PHONY: restart
+# restart just the service (useful for picking up new environment variable values)
+restart:
+	docker compose up -d blockscout --force-recreate
+
+.PHONY: restart-postgres
+# restart just the database without wiping it's data
+restart-postgres:
+	docker compose up -d postgres --force-recreate
+
+.PHONY: reset
+# wipe state and restart the service and all it's dependencies
+reset:
+	docker compose up -d --build --remove-orphans --renew-anon-volumes --force-recreate
+
+# wipe just the database state and restart just the database
+.PHONY: reset-postgres
+reset-postgres:
+	docker compose up -d postgres --force-recreate --renew-anon-volumes
+
+.PHONY: refresh
+
+# rebuild from latest local sources and restart just the service containers
+# (preserving any volume state such as database tables & rows)
+refresh:
+	docker compose up -d blockscout --build --force-recreate
+
+.PHONY: logs
+# follow the logs from all the dockerized services
+# make logs
+# or one
+# make logs S=blockscout
+logs:
+	docker compose logs ${S} -f
+
+.PHONY: debug-database
+# open a connection to the postgres database for debugging it's state
+# https://www.postgresql.org/docs/current/app-psql.html
+debug-database:
+	docker compose exec postgres psql -U ${POSTGRES_ADMIN_USERNAME} -d ${POSTGRES_BLOCKSCOUT_DATABASE_NAME}

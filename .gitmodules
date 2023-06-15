@@ -1,0 +1,3 @@
+[submodule "blockscout/blockscout-base"]
+	path = blockscout/blockscout-base
+	url = git@github.com:blockscout/blockscout.git

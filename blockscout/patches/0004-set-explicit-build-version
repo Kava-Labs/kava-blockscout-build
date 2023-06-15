@@ -1,0 +1,13 @@
+diff --git a/apps/block_scout_web/priv/gettext/en/LC_MESSAGES/default.po b/apps/block_scout_web/priv/gettext/en/LC_MESSAGES/default.po
+index 374b4a6091..78bbdf3522 100644
+--- a/apps/block_scout_web/priv/gettext/en/LC_MESSAGES/default.po
++++ b/apps/block_scout_web/priv/gettext/en/LC_MESSAGES/default.po
+@@ -3325,7 +3325,7 @@ msgstr ""
+ #: lib/block_scout_web/templates/verified_contracts/index.html.eex:66
+ #, elixir-autogen, elixir-format
+ msgid "Version"
+-msgstr ""
++msgstr "v5.1.5-kava-bc38c81"
+ 
+ #: lib/block_scout_web/templates/address_contract_verification/new.html.eex:33
+ #, elixir-autogen, elixir-format

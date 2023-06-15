@@ -1,20 +1,22 @@
 #!/usr/bin/env bash
 
-set -e
+# log all commands ran and exit script immediately
+# on first non-zero return code from any command ran
+set -ex
 
-psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" <<-EOSQL
-    ALTER SYSTEM SET max_connections = 200;
+psql -v ON_ERROR_STOP=1 -U "$POSTGRES_ADMIN_USERNAME" <<-EOSQL
+    ALTER SYSTEM SET max_connections = $POSTGRES_MAX_NUM_CONNECTIONS;
 
-    CREATE USER blockscout_user;
-    CREATE DATABASE blockscout_testing ENCODING UTF8;
+    CREATE USER $POSTGRES_BLOCKSCOUT_USERNAME;
+    CREATE DATABASE $POSTGRES_BLOCKSCOUT_DATABASE_NAME ENCODING UTF8;
 
-    GRANT ALL PRIVILEGES ON DATABASE blockscout_testing TO blockscout_user;
+    GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_BLOCKSCOUT_DATABASE_NAME TO $POSTGRES_BLOCKSCOUT_USERNAME;
 
-    ALTER USER blockscout_user WITH PASSWORD '$DB_BLOCKSCOUT_PASSWORD';
+    ALTER USER $POSTGRES_BLOCKSCOUT_USERNAME WITH PASSWORD '$DB_BLOCKSCOUT_PASSWORD';
 
-    \c blockscout_testing
+    \c $POSTGRES_BLOCKSCOUT_DATABASE_NAME
 
-    GRANT ALL ON SCHEMA public TO blockscout_user;
+    GRANT ALL ON SCHEMA public TO $POSTGRES_BLOCKSCOUT_USERNAME;
 
     CREATE EXTENSION "pgtap";
     CREATE EXTENSION "pg_trgm";
