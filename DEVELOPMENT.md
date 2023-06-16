@@ -150,6 +150,63 @@ cd ../../
 make refresh
 ```
 
+#### Indexer status
+
+To see how far back the block explorer has indexed blocks, connect to the database and query to see what is the earliest block it has indexed, if these values change that means earlier and earlier blocks are being indexed (`refetch_needed` indicates whether the indexing was successful)
+
+```bash
+make debug-database
+blockscout_testing=# select number, inserted_at, updated_at, refetch_needed from blocks order by number asc limit 5;
+ number  |        inserted_at         |         updated_at         | refetch_needed
+---------+----------------------------+----------------------------+----------------
+ 5762464 | 2023-06-16 00:27:58.151073 | 2023-06-16 00:27:58.151073 | f
+ 5762465 | 2023-06-16 00:27:58.032291 | 2023-06-16 00:27:58.032291 | f
+ 5762466 | 2023-06-16 00:27:57.890547 | 2023-06-16 00:27:57.890547 | f
+ 5762467 | 2023-06-16 00:27:57.774853 | 2023-06-16 00:27:57.774853 | f
+ 5762468 | 2023-06-16 00:27:57.658246 | 2023-06-16 00:27:57.658246 | f
+(5 rows)
+
+blockscout_testing=# select number, inserted_at, updated_at, refetch_needed from blocks order by number asc limit 5;
+ number  |        inserted_at         |         updated_at         | refetch_needed
+---------+----------------------------+----------------------------+----------------
+ 5762461 | 2023-06-16 00:27:58.521786 | 2023-06-16 00:27:58.521786 | f
+ 5762462 | 2023-06-16 00:27:58.409383 | 2023-06-16 00:27:58.409383 | f
+ 5762463 | 2023-06-16 00:27:58.272033 | 2023-06-16 00:27:58.272033 | f
+ 5762464 | 2023-06-16 00:27:58.151073 | 2023-06-16 00:27:58.151073 | f
+ 5762465 | 2023-06-16 00:27:58.032291 | 2023-06-16 00:27:58.032291 | f
+(5 rows)
+
+blockscout_testing=# select number, inserted_at, updated_at, refetch_needed from blocks order by number asc limit 5;
+ number  |        inserted_at         |         updated_at         | refetch_needed
+---------+----------------------------+----------------------------+----------------
+ 5762458 | 2023-06-16 00:27:59.161544 | 2023-06-16 00:27:59.161544 | f
+ 5762459 | 2023-06-16 00:27:59.023982 | 2023-06-16 00:27:59.023982 | f
+ 5762460 | 2023-06-16 00:27:58.752723 | 2023-06-16 00:27:58.752723 | f
+ 5762461 | 2023-06-16 00:27:58.521786 | 2023-06-16 00:27:58.521786 | f
+ 5762462 | 2023-06-16 00:27:58.409383 | 2023-06-16 00:27:58.409383 | f
+(5 rows)
+```
+
+#### Running local explorer against production network(s)
+
+Update values in the [local environment file](.env) to point to the archive / pruning endpoint of the network you want your local instance of Blockscout to index
+
+```bash
+# ETHEREUM_JSONRPC_HTTP_URL=http://kava:8545
+# uncomment below to have blockscout index public testnet
+ETHEREUM_JSONRPC_HTTP_URL=https://evm.data-testnet.kava.io
+ETHEREUM_JSONRPC_WS_URL=wss://wevm.data-testnet.kava.io
+# uncomment below to have blockscout index mainnet
+# ETHEREUM_JSONRPC_HTTP_URL=https://evm.data.kava.io
+# ETHEREUM_JSONRPC_WS_URL=wss://wevm.data.kava.io
+```
+
+```bash
+# wipe all state and restart containers with updated environment variables
+make reset
+```
+
+Open the [Blockscout UI](http://localhost:4000) to inspect progress
 
 ### Postgres
 
