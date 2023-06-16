@@ -154,7 +154,7 @@ make refresh
 
 To see how far back the block explorer has indexed blocks, connect to the database and query to see what is the earliest block it has indexed, if these values change that means earlier and earlier blocks are being indexed (`refetch_needed` indicates whether the indexing was successful)
 
-```bash
+```sql
 make debug-database
 blockscout_testing=# select number, inserted_at, updated_at, refetch_needed from blocks order by number asc limit 5;
  number  |        inserted_at         |         updated_at         | refetch_needed
@@ -185,6 +185,17 @@ blockscout_testing=# select number, inserted_at, updated_at, refetch_needed from
  5762461 | 2023-06-16 00:27:58.521786 | 2023-06-16 00:27:58.521786 | f
  5762462 | 2023-06-16 00:27:58.409383 | 2023-06-16 00:27:58.409383 | f
 (5 rows)
+```
+
+Another thing to look at is the select count(*) from pending_block_operations;, which is the leading cause of blockscout slowing down our nodes on mainnet is my hypothesis.
+
+```sql
+select count(*) from pending_block_operations;
+> 1612632
+
+select * from pending_block_operations limit 1;
+> block_hash | inserted_at | updated_at | fetch_internal_transactions
+> 0x95c132c930f104232464ab278cfde649e74963c743c634277497e824c38a43fc | 2023-01-21 23:49:21.372883 | 2023-01-21 23:49:21.372883 | true
 ```
 
 #### Running local explorer against production network(s)
