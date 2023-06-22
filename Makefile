@@ -32,8 +32,16 @@ publish: vendor-blockscout
 # build a production image using local sources and push it to the remote repository using tag `hotfix
 hotfix-release: publish
 	AWS_PROFILE=shared aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 843137275421.dkr.ecr.us-east-1.amazonaws.com && \
-	docker tag ${IMAGE_NAME}:${PRODUCTION_IMAGE_TAG} 843137275421.dkr.ecr.us-east-1.amazonaws.com/kava-blockscout:hotfix && \
-	docker push 843137275421.dkr.ecr.us-east-1.amazonaws.com/kava-blockscout:hotfix
+	docker tag ${IMAGE_NAME}:${PRODUCTION_IMAGE_TAG} 843137275421.dkr.ecr.us-east-1.amazonaws.com/${IMAGE_NAME}:hotfix && \
+	docker push 843137275421.dkr.ecr.us-east-1.amazonaws.com/${IMAGE_NAME}:hotfix
+
+.PHONY: release
+# build and push an image using local sources and tagged according to values
+# specified in /.env
+release: publish
+	AWS_PROFILE=shared aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 843137275421.dkr.ecr.us-east-1.amazonaws.com && \
+	docker tag ${IMAGE_NAME}:${PRODUCTION_IMAGE_TAG} 843137275421.dkr.ecr.us-east-1.amazonaws.com/${IMAGE_NAME}:${PRODUCTION_IMAGE_TAG} && \
+	docker push 843137275421.dkr.ecr.us-east-1.amazonaws.com/${IMAGE_NAME}:${PRODUCTION_IMAGE_TAG}
 
 .PHONY: up
 # start dockerized versions of the service and it's dependencies
