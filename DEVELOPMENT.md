@@ -94,7 +94,7 @@ other commands with comments for their purpose are available in the [Makefile](.
 npx hardhat node --hostname 0.0.0.0
 ```
 
-# Testing
+## Testing
 
 Running blockscout tests
 
@@ -104,7 +104,6 @@ mix test
 ```
 
 > NOTE: These currently fail, TBD on cause or resolution
-
 
 ## Debugging
 
@@ -250,6 +249,8 @@ blockscout_testing=#
 
 ## Publishing New Versions
 
+> Note: you must use an x86/intel cpu architecture computer to build any image that is meant to be run in a production environment, if you don't have access to one locally create an EC2 instance to use until Github actions are set up to handle Continuous Integration for building new production / hotfix images
+
 ### Hotfix flow
 
 Deploy the image to ECS by updating the version tag to `hotfix` (or you can re-tag to a more specific version as desired) in the [infrastructure repo](https://github.com/Kava-Labs/infrastructure/blob/master/terraform/product/production/us-east-1/blockscout-testnet/service/terragrunt.hcl#L48) and running `AWS_PROFILE=root terragrunt apply`
@@ -263,3 +264,13 @@ If you are deploying multiple hotfixes with the same tag as part of an iterative
 ```bash
 AWS_PROFILE=production aws ecs update-service --cluster blockchain-service --service blockscout-kava-10-testnet --force-new-deployment
 ```
+
+### Normal release flow
+
+To build a new image with the tag equal to the value of `PRODUCTION_IMAGE_TAG` in the [env file](./.env)
+
+```bash
+make release
+```
+
+Deploy the image to ECS by updating the version tag to match the value of `PRODUCTION_IMAGE_TAG` in the [infrastructure repo](https://github.com/Kava-Labs/infrastructure/blob/master/terraform/product/production/us-east-1/blockscout-testnet/service/terragrunt.hcl#L48) and running `AWS_PROFILE=root terragrunt apply`
