@@ -1,0 +1,13 @@
+name: Continuous Integration (Default Checks)
+
+on:
+  workflow_call:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo from current commit
+        uses: actions/checkout@v3
+
+      - name: build application
+        run: make build
