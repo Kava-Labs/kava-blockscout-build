@@ -3,5 +3,5 @@ on:
   push:
 # run per commit ci checks against this commit
 jobs:
-  lint:
+  build:
     uses: ./.github/workflows/ci-default.yml

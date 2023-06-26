@@ -8,6 +8,12 @@ jobs:
     steps:
       - name: checkout repo from current commit
         uses: actions/checkout@v3
-
-      - name: build application
+      # load/create a cache of docker images from previous job runs (if any)
+      - name: cache docker images
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        # Ignore the failure of a step and avoid terminating the job.
+        continue-on-error: true
+      - name: build production docker image
         run: make build
+      # Finally, "Post Run jpribyl action-docker-layer-caching@v0.1.1",
+      # which is the process of saving the docker cache, will be executed.
