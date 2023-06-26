@@ -1,0 +1,17 @@
+name: Continuous Integration (Main Branch)
+on:
+  push:
+    # run CI on any push to the main branch
+    branches:
+      - main
+jobs:
+  # run default ci checks against main branch
+  default-checks:
+    uses: ./.github/workflows/ci-default.yml
+  # build image from local sources and publish it to the Kava private AWS ECR repo
+  build-push-docker-image-to-ecr:
+    needs: [default-checks]
+    uses: ./.github/workflows/ci-build-push-docker-image-to-ecr.yml
+    with:
+        aws-region: us-east-1
+    secrets: inherit

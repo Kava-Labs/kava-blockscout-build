@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@v3
       # load/create a cache of docker images from previous job runs (if any)
       - name: cache docker images
-        uses: satackey/action-docker-layer-caching@v0.0.11
+        uses: jpribyl/action-docker-layer-caching@v0.1.1
         # Ignore the failure of a step and avoid terminating the job.
         continue-on-error: true
       - name: build production docker image
