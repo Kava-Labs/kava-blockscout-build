@@ -18,13 +18,13 @@ vendor-blockscout:
 
 .PHONY: build
 # build a development version docker image of the service
-build: vendor-blockscout
+build:
 	cd blockscout && \
 	docker build ./ -f Dockerfile -t ${IMAGE_NAME}:${LOCAL_IMAGE_TAG}
 
 .PHONY: publish
 # build a production version docker image of the service
-publish: vendor-blockscout
+publish:
 	cd blockscout && \
 	docker build ./ -f Dockerfile -t ${IMAGE_NAME}:${PRODUCTION_IMAGE_TAG}
 
