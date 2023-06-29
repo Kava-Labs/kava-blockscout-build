@@ -82,9 +82,10 @@ RUN cd blockscout \
 FROM debian:11 as runner
 ARG BLOCKSCOUT_VERSION
 
-# Install locale, update ca certs
-RUN apt-get update \
-  && apt-get install -y locales ca-certificates \
+# Install locale, update ca certs, install node for contract verification
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+  && apt-get update \
+  && apt-get install -y locales ca-certificates nodejs \
   && rm -rf /var/lib/apt/lists/* \
   && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
   && locale-gen \
