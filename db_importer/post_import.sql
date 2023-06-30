@@ -5,9 +5,15 @@ insert into
 select
   *
 from
-  imported.addresses on conflict (hash) do nothing;
+  imported.addresses on conflict (hash) do
+update
+set
+  contract_code = excluded.contract_code,
+  updated_at = excluded.updated_at,
+  verified = excluded.verified;
 
 -- Copy contract addresses. EXCLUDES id column so that it is auto-incremented correctly.
+-- v4.1.1 columns
 insert into
   public.smart_contracts (
     name,
@@ -53,11 +59,13 @@ select
   file_path,
   is_changed_bytecode,
   bytecode_checked_at,
-  contract_code_md5,
-  implementation_name,
-  implementation_address_hash,
-  implementation_fetched_at,
-  compiler_settings
+  -- new columns not in previous version (v4.1.1)
+  -- Follows the default values in the migrations.
+  md5 (contract_source_code),
+  null, -- implementation_name
+  null, -- implementation_address_hash
+  null, -- implementation_fetched_at
+  null -- compiler_settings
 from
   imported.smart_contracts on conflict (address_hash) do nothing;
 

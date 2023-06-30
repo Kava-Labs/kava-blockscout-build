@@ -12,6 +12,12 @@ if [ "$DRY_RUN" = true ]; then
     TRANSACTION_END="ROLLBACK;"
 fi
 
+# Check if file at IMPORT_FILE_PATH exists
+if [ ! -f "$IMPORT_FILE_PATH" ]; then
+    echo "Import SQL file at $IMPORT_FILE_PATH does not exist"
+    exit 1
+fi
+
 # Runs all the SQL scripts in the specified order in a single transaction
 psql <<-EOSQL
     \unset ECHO
