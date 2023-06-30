@@ -105,6 +105,3 @@ update
 set
   name = excluded.name,
   updated_at = excluded.updated_at;
-
--- Remove the temporary import schema
-drop schema imported cascade;
