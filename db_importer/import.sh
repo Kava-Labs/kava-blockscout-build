@@ -7,6 +7,19 @@ RUN_TESTS=${RUN_TESTS:-false}
 KEEP_IMPORTED_SCHEMA=${KEEP_IMPORTED_SCHEMA:-false}
 DRY_RUN=${DRY_RUN:-false}
 
+# Check if DATABASE_URL is defined
+if [ -z "$DATABASE_URL" ]; then
+  echo "DATABASE_URL is not defined"
+  exit 1
+fi
+
+# Parse DATABASE_URL parts, pg_prove doesn't support urls D:
+PGUSER=$(echo $DATABASE_URL | grep -oP "postgres://\K(.+?):" | cut -d: -f1)
+PGPASSWORD=$(echo $DATABASE_URL | grep -oP "postgres://.*:\K(.+?)@" | cut -d@ -f1)
+PGHOST=$(echo $DATABASE_URL | grep -oP "postgres://.*@\K(.+?):" | cut -d: -f1)
+PGPORT=$(echo $DATABASE_URL | grep -oP "postgres://.*@.*:\K(\d+)/" | cut -d/ -f1)
+PGDATABASE=$(echo $DATABASE_URL | grep -oP "postgres://.*@.*:.*/\K(.+?)$")
+
 TRANSACTION_END="COMMIT;"
 if [ "$DRY_RUN" = true ]; then
     TRANSACTION_END="ROLLBACK;"

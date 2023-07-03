@@ -41,13 +41,9 @@ The importer is a script that imports verified smart contracts from a SQL file
 into a PostgreSQL database. The importer is designed to be used with BlockScout
 to keep verified smart contracts when re-indexing the database.
 
-Standard database environment variables:
+Required environment variables:
 
-- `PGHOST`
-- `PGPORT`
-- `PGUSER`
-- `PGDATABASE`
-- `PGPASSWORD`
+- `DATABASE_URL`
 
 Optional environment variables:
 
@@ -69,11 +65,7 @@ Optional environment variables:
 ```bash
 docker run \
     --net=host \
-    -e PGHOST=localhost \
-    -e PGPORT=5444 \
-    -e PGUSER=blockscout_user \
-    -e PGPASSWORD=blockscout_password123 \
-    -e PGDATABASE=blockscout_testing \
+    --env DATABASE_URL=postgres://blockscout_user:blockscout_password123@database_host:5444/blockscout_testing \
     -e RUN_TESTS=true \
     -v ./db_exporter/export:/import \
     blockscout-db-importer
