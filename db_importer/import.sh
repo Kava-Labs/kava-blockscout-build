@@ -14,15 +14,21 @@ if [ -z "$DATABASE_URL" ]; then
 fi
 
 # Parse DATABASE_URL parts, pg_prove doesn't support urls D:
-PGUSER=$(echo $DATABASE_URL | grep -oP "postgres://\K(.+?):" | cut -d: -f1)
-PGPASSWORD=$(echo $DATABASE_URL | grep -oP "postgres://.*:\K(.+?)@" | cut -d@ -f1)
-PGHOST=$(echo $DATABASE_URL | grep -oP "postgres://.*@\K(.+?):" | cut -d: -f1)
-PGPORT=$(echo $DATABASE_URL | grep -oP "postgres://.*@.*:\K(\d+)/" | cut -d/ -f1)
-PGDATABASE=$(echo $DATABASE_URL | grep -oP "postgres://.*@.*:.*/\K(.+?)$")
+export PGUSER=$(echo $DATABASE_URL | grep -oP "postgres://\K(.+?):" | cut -d: -f1)
+export PGPASSWORD=$(echo $DATABASE_URL | grep -oP "postgres://.*:\K(.+?)@" | cut -d@ -f1)
+export PGHOST=$(echo $DATABASE_URL | grep -oP "postgres://.*@\K(.+?):" | cut -d: -f1)
+export PGPORT=$(echo $DATABASE_URL | grep -oP "postgres://.*@.*:\K(\d+)/" | cut -d/ -f1)
+export PGDATABASE=$(echo $DATABASE_URL | grep -oP "postgres://.*@.*:.*/\K(.+?)$")
 
 TRANSACTION_END="COMMIT;"
 if [ "$DRY_RUN" = true ]; then
     TRANSACTION_END="ROLLBACK;"
+fi
+
+# If DRY_RUN and RUN_TESTS are both true, error
+if [ "$DRY_RUN" = true ] && [ "$RUN_TESTS" = true ]; then
+    echo "DRY_RUN and RUN_TESTS cannot both be true"
+    exit 1
 fi
 
 # Check if file at IMPORT_FILE_PATH exists
@@ -32,7 +38,7 @@ if [ ! -f "$IMPORT_FILE_PATH" ]; then
 fi
 
 # Runs all the SQL scripts in the specified order in a single transaction
-psql <<-EOSQL
+psql "$DATABASE_URL" <<-EOSQL
     \unset ECHO
     \set QUIET 1
 
@@ -70,7 +76,7 @@ if [ "$KEEP_IMPORTED_SCHEMA" != true ]; then
 
     # Run query to clear temporary schema. Run this separate from post_import.sql
     # So we can run the tests before clearing the schema.
-    psql -c "drop schema if exists imported cascade;"
+    psql "$DATABASE_URL" -c "drop schema if exists imported cascade;"
 else
     echo "Keeping imported schema"
 fi
