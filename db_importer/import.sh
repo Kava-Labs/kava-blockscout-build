@@ -80,3 +80,6 @@ if [ "$KEEP_IMPORTED_SCHEMA" != true ]; then
 else
     echo "Keeping imported schema"
 fi
+
+echo "Done! Sleeping forever now... goodnight. ctrl-c to exit."
+sleep infinity
