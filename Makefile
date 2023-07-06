@@ -22,6 +22,18 @@ build:
 	cd blockscout && \
 	docker build ./ -f Dockerfile -t ${IMAGE_NAME}:${LOCAL_IMAGE_TAG}
 
+.PHONY: build-db-exporter
+# build the exporter image
+build-db-exporter:
+	cd db_exporter && \
+	docker buildx bake -f docker-bake.hcl
+
+.PHONY: build-db-importer
+# build the importer image
+build-db-importer:
+	cd db_importer && \
+	docker buildx bake -f docker-bake.hcl
+
 .PHONY: publish
 # build a production version docker image of the service
 publish:
