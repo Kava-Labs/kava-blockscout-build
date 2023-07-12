@@ -55,6 +55,7 @@ POSTGRES_MAX_NUM_CONNECTIONS=200
 ## Building
 
 Build a development version docker image of the service
+
 ```bash
 make build
 ```
@@ -186,7 +187,7 @@ blockscout_testing=# select number, inserted_at, updated_at, refetch_needed from
 (5 rows)
 ```
 
-Another thing to look at is the select count(*) from pending_block_operations;, which is the leading cause of blockscout slowing down our nodes on mainnet is my hypothesis.
+Another thing to look at is the select count(*) from pending_block_operations;, which returns the number of operations blockscout needs to complete (usually indexing blocks) before it considers itself "caught up"
 
 ```sql
 select count(*) from pending_block_operations;
@@ -196,6 +197,18 @@ select * from pending_block_operations limit 1;
 > block_hash | inserted_at | updated_at | fetch_internal_transactions
 > 0x95c132c930f104232464ab278cfde649e74963c743c634277497e824c38a43fc | 2023-01-21 23:49:21.372883 | 2023-01-21 23:49:21.372883 | true
 ```
+
+If running the below query several times and the block_number for the operation doesn't increase, that's a good sign that blockscout is unable to index that block or any block before it
+
+```sql
+select * from pending_block_operations order by block_number asc limit 1;
+> 0x9da63e0af2d74a44734cc4315bb01cd374b185ea60fcaf2a75752c944b14dc60	2023-06-26 01:18:18.114735	2023-06-26 01:18:18.114735	4713634
+```
+
+Known issues that have caused blockscout indexing to stall
+- Eth API endpoint gets overwhelmed (can fix by adding more nodes to the API endpoint)
+- Blockscout app goes offline for long enough that when it comes online it can't index the blocks it missed because those have been pruned (can fix by pointing blockscout at an archive API endpoint)
+- Blockscout is indexing new blocks but isn't catching up on older blocks (can fix by increasing [indexer concurrency settings](https://docs.blockscout.com/for-developers/information-and-settings/env-variables#indexer-management), mainly `INDEXER_CATCHUP_BLOCKS_BATCH_SIZE`, `INDEXER_CATCHUP_BLOCKS_CONCURRENCY` and `INDEXER_CATCHUP_BLOCK_INTERVAL`)
 
 #### Running local explorer against production network(s)
 
