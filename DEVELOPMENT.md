@@ -205,6 +205,11 @@ select * from pending_block_operations order by block_number asc limit 1;
 > 0x9da63e0af2d74a44734cc4315bb01cd374b185ea60fcaf2a75752c944b14dc60	2023-06-26 01:18:18.114735	2023-06-26 01:18:18.114735	4713634
 ```
 
+Known issues that have caused blockscout indexing to stall
+- Eth API endpoint gets overwhelmed (can fix by adding more nodes to the API endpoint)
+- Blockscout app goes offline for long enough that when it comes online it can't index the blocks it missed because those have been pruned (can fix by pointing blockscout at an archive API endpoint)
+- Blockscout is indexing new blocks but isn't catching up on older blocks (can fix by increasing [indexer concurrency settings](https://docs.blockscout.com/for-developers/information-and-settings/env-variables#indexer-management), mainly `INDEXER_CATCHUP_BLOCKS_BATCH_SIZE`, `INDEXER_CATCHUP_BLOCKS_CONCURRENCY` and `INDEXER_CATCHUP_BLOCK_INTERVAL`)
+
 #### Running local explorer against production network(s)
 
 Update values in the [local environment file](.env) to point to the archive / pruning endpoint of the network you want your local instance of Blockscout to index
