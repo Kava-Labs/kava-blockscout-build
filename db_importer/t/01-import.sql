@@ -2,7 +2,7 @@
 begin;
 
 select
-    plan (9);
+    plan (11);
 
 -- run the tests.
 select
@@ -37,6 +37,13 @@ select
     );
 
 select
+    has_table (
+        'imported',
+        'tokens',
+        'tokens table should be created'
+    );
+
+select
     bag_eq (
         'select hash, contract_code from imported.addresses',
         'select hash, contract_code from public.addresses where hash in (select hash from imported.addresses)',
@@ -52,8 +59,8 @@ select
 
 select
     bag_eq (
-        'select name from imported.smart_contracts',
-        'select name from public.address_names where address_hash in (select address_hash from imported.smart_contracts)',
+        'select address_hash from imported.smart_contracts',
+        'select address_hash from public.address_names where address_hash in (select address_hash from imported.smart_contracts)',
         'address_names should be imported and updated from the imported.smart_contracts table'
     );
 
@@ -62,6 +69,13 @@ select
         'select "primary" from public.address_names where address_hash in (select address_hash from imported.smart_contracts)',
         'select false',
         'imported addresses should be primary name'
+    );
+
+select
+    bag_eq (
+        'select name from imported.tokens',
+        'select name from public.tokens where contract_address_hash in (select contract_address_hash from imported.tokens)',
+        'tokens should be imported and updated from the imported.tokens table'
     );
 
 -- finish the tests and clean up.

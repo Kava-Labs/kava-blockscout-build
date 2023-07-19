@@ -113,3 +113,57 @@ update
 set
   name = excluded.name,
   updated_at = excluded.updated_at;
+
+-- Add tokens
+insert into
+  public.tokens (
+    name,
+    symbol,
+    total_supply,
+    decimals,
+    type,
+    cataloged,
+    contract_address_hash,
+    inserted_at,
+    updated_at,
+    -- Null-able columns below, fine if they are missing
+    holder_count,
+    skip_metadata,
+    fiat_value,
+    circulating_market_cap,
+    total_supply_updated_at_block,
+    icon_url
+  )
+select
+  name,
+  symbol,
+  total_supply,
+  decimals,
+  type,
+  cataloged,
+  contract_address_hash,
+  inserted_at,
+  updated_at,
+  holder_count,
+  skip_metadata,
+  fiat_value,
+  circulating_market_cap,
+  total_supply_updated_at_block,
+  icon_url
+from
+  imported.tokens on conflict (contract_address_hash) do
+update
+set
+  name = excluded.name,
+  symbol = excluded.symbol,
+  total_supply = excluded.total_supply,
+  decimals = excluded.decimals,
+  type = excluded.type,
+  cataloged = excluded.cataloged,
+  updated_at = excluded.updated_at,
+  holder_count = excluded.holder_count,
+  skip_metadata = excluded.skip_metadata,
+  fiat_value = excluded.fiat_value,
+  circulating_market_cap = excluded.circulating_market_cap,
+  total_supply_updated_at_block = excluded.total_supply_updated_at_block,
+  icon_url = excluded.icon_url;
