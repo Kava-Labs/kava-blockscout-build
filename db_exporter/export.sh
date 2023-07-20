@@ -19,6 +19,7 @@ pg_dump \
     -t public.smart_contracts_additional_sources \
     -t public.contract_methods \
     -t public.addresses \
+    -t public.tokens \
     "$DATABASE_URL" \
      > "$EXPORT_FILE"
 
@@ -35,3 +36,4 @@ fi
 sed $SEDOPTION 's/public.smart_contracts/imported.smart_contracts/g' "$EXPORT_FILE_UPDATED"
 sed $SEDOPTION 's/public.contract_methods/imported.contract_methods/g' "$EXPORT_FILE_UPDATED"
 sed $SEDOPTION 's/public.addresses/imported.addresses/g' "$EXPORT_FILE_UPDATED"
+sed $SEDOPTION 's/public.tokens/imported.tokens/g' "$EXPORT_FILE_UPDATED"
