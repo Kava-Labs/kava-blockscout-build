@@ -3,12 +3,13 @@ version: "3"
 services:
   # run single validator kava node to provide a local kava network for development and testing of the blockscout service end to end
   kava:
-    image: kava/kava:latest
+    image: kava/kava:v0.24.0
     entrypoint: /docker/kava/kava-entrypoint.sh
     env_file: .env
     volumes:
       - ./kava:/docker/kava
     ports:
+      - "${KAVA_HOST_COSMOS_API_PORT}:${KAVA_CONTAINER_COSMOS_API_PORT}"
       - "${KAVA_HOST_COSMOS_RPC_PORT}:${KAVA_CONTAINER_COSMOS_RPC_PORT}"
       - "${KAVA_HOST_EVM_RPC_PORT}:${KAVA_CONTAINER_EVM_RPC_PORT}"
     # expose ports for other services to be able to connect to within
