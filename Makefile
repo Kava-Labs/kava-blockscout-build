@@ -26,13 +26,13 @@ build:
 # build the exporter image
 build-db-exporter:
 	cd db_exporter && \
-	docker buildx bake -f docker-bake.hcl
+	docker buildx bake -f docker-bake.hcl --load
 
 .PHONY: build-db-importer
 # build the importer image
 build-db-importer:
 	cd db_importer && \
-	docker buildx bake -f docker-bake.hcl
+	docker buildx bake -f docker-bake.hcl --load
 
 .PHONY: publish
 # build a production version docker image of the service
