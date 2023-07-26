@@ -45,7 +45,7 @@ SET
 name='Create3Factory',
 "primary"=true,
 inserted_at=now(),
-updated_at=now
+updated_at=now()
 WHERE address_hash=decode('6df7bf308ABaf673f38Db316ECc97b988CE1Ca78', 'hex');
 
 ---- Step 3 Update Smart Contracts table for conract

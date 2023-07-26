@@ -28,7 +28,7 @@ Optional environment variable:
 ```bash
 docker run \
     --env DATABASE_URL=postgres://blockscout_user:blockscout_password123@database_host:5444/blockscout_testing \
-    -v ./db_exporter/export:/export \
+    -v /PLACEHOLDER_PATH_ON_YOUR_MACHINE/export:/export \
     blockscout-db-exporter
 ```
 
@@ -50,6 +50,7 @@ Optional environment variables:
 - `IMPORT_FILE_PATH` - The path to the previously exported SQL file. Ensure that
   your container mounts the correct file. Defaults to
   `/import/smart_contracts_import.sql`.
+  if your database to import to has a different main user (e.g. `blockscout_user` vs `blockscout`), replace all occurrences of the username for the exported database with the username for the imported database in `smart_contracts_import.sql` (e.g. with vim `:%s/blockscout/blockscout_user/g`)
 - `RUN_TESTS` - Whether to run tests after importing the SQL file. Defaults to
   `false`.
 - `DRY_RUN` - Rolls back all changes if the import is successful. Defaults to
