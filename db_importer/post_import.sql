@@ -5,7 +5,9 @@ insert into
 select
   *
 from
-  imported.addresses on conflict (hash) do
+  imported.addresses
+where
+  contract_code is not null on conflict (hash) do
 update
 set
   contract_code = excluded.contract_code,
@@ -57,7 +59,7 @@ select
   is_vyper_contract,
   partially_verified,
   file_path,
-  is_changed_bytecode,
+  false, -- is_changed_bytecode, reset to false for blockscout to re-check
   bytecode_checked_at,
   -- new columns not in previous version (v4.1.1)
   -- Follows the default values in the migrations.
