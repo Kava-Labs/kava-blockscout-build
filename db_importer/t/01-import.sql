@@ -46,7 +46,7 @@ select
 select
     bag_eq (
         'select hash, contract_code from imported.addresses',
-        'select hash, contract_code from public.addresses where hash in (select hash from imported.addresses)',
+        'select hash, contract_code from public.addresses where hash in (select hash from imported.addresses where contract_code is not null)',
         'addresses should be imported with the new bytecode'
     );
 
