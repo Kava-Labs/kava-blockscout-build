@@ -69,6 +69,7 @@ select
   null, -- implementation_fetched_at
   null -- compiler_settings
 from
+  -- do nothing may cause the test to fail 
   imported.smart_contracts on conflict (address_hash) do nothing;
 
 -- Copy additional sources
