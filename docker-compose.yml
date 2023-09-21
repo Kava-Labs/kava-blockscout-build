@@ -22,6 +22,7 @@ services:
     build: "./db"
     volumes:
       - "./db/initdb.d:/docker-entrypoint-initdb.d"
+      - "./postgres-data:/var/lib/postgresql/data"
     ports:
       - "${POSTGRES_HOST_PORT}:${POSTGRES_CONTAINER_PORT}"
   blockscout:
