@@ -6,8 +6,7 @@ select
   *
 from
   imported.addresses
-where
-  contract_code is not null on conflict (hash) do
+on conflict (hash) do
 update
 set
   contract_code = excluded.contract_code,
@@ -53,7 +52,7 @@ select
   updated_at,
   constructor_arguments,
   optimization_runs,
-  evm_version,
+  evm_version
   external_libraries,
   verified_via_sourcify,
   is_vyper_contract,
@@ -64,12 +63,12 @@ select
   -- new columns not in previous version (v4.1.1)
   -- Follows the default values in the migrations.
   md5 (contract_source_code),
-  null, -- implementation_name
-  null, -- implementation_address_hash
-  null, -- implementation_fetched_at
-  null -- compiler_settings
+  implementation_name,
+  implementation_address_hash,
+  implementation_fetched_at,
+  compiler_settings
 from
-  -- do nothing may cause the test to fail 
+  -- do nothing may cause the test to fail
   imported.smart_contracts on conflict (address_hash) do nothing;
 
 -- Copy additional sources

@@ -26,7 +26,7 @@ build:
 # build the exporter image
 build-db-exporter:
 	cd db_exporter && \
-	docker buildx bake -f docker-bake.hcl --load
+	docker build ./ -t blockscout-db-exporter
 
 .PHONY: build-db-importer
 # build the importer image

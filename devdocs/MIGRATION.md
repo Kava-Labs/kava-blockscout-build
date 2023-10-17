@@ -71,3 +71,6 @@ docker run \
     -v ./db_exporter/export:/import \
     blockscout-db-importer
 ```
+
+
+[E2E Production Example](https://kava-labs.atlassian.net/wiki/spaces/ENG/pages/1328250881/Migrating+Verified+Contracts+between+Blockscout+Services)
