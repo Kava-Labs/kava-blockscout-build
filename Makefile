@@ -20,7 +20,7 @@ vendor-blockscout:
 # build a development version docker image of the service
 build:
 	cd blockscout && \
-	docker build ./ -f Dockerfile -t ${IMAGE_NAME}:${LOCAL_IMAGE_TAG}
+	docker build ./ -f Dockerfile -t ${IMAGE_NAME}:${LOCAL_IMAGE_TAG} --build-arg BLOCKSCOUT_VERSION=${BLOCKSCOUT_DOCKER_VERSION}
 
 .PHONY: build-db-exporter
 # build the exporter image
@@ -83,6 +83,8 @@ reset:
 # wipe just the database state and restart just the database
 .PHONY: reset-postgres
 reset-postgres:
+	docker compose stop postgres && \
+	rm -rf postgres-data	&& \
 	docker compose up -d postgres --force-recreate --renew-anon-volumes
 
 .PHONY: refresh
