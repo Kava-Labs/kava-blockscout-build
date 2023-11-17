@@ -152,6 +152,58 @@ cd ../../
 make refresh
 ```
 
+#### Portable Docker Dev Environment
+
+Requires
+    - vscode
+    - docker
+
+Build an image that has all elixir and node dependnecies to run the app, and all current source code and compiled assets
+
+```bash
+make local
+```
+
+run a docker container using the above image
+
+```bash
+docker run -it -d -v ./blockscout/blockscout-base:/src/blockscout  -v ./blockscout/patches:/src/patches kava-blockscout:local
+
+# apply current patches
+cd /blockscout/blockscout-base && git apply ../patches/*.patch && git add ./ && git commit -m "REVERT-ME-PATCH-COMMIT"
+# REVERT this commit before pushing to origin for a PR)
+```
+
+Attach a [vs code editor dev container](https://code.visualstudio.com/docs/devcontainers/containers) to the running container (open command member, type/select Dev Containers: Attach to running container)
+
+Now any code changes you make inside the container will be persisted on your local machine, and you can use the patch workflow below to upstream your code changes.
+
+Create a patch of your changes to be applied when the development or production docker image is built
+
+```bash
+# from your host machine
+cd /blockcout/blockscout-base
+git diff > ../patches/NAME_OF_PATCH.patch
+```
+
+Some helpful commands
+
+```bash
+# from inside /src/blockscout of dev container
+# fetch dependencies from all apps
+mix deps.get
+# compile sources for all apps (indexer, explorer)
+mix compile
+
+# if you want to just update / compile a single app, such as the indexer
+# from inside /src/blockscout of dev container
+cd /apps/indexer
+# fetch dependencies for just this app
+mix deps.get
+# compile sources for just this app
+mix compile
+```
+
 #### Indexer status
 
 To see how far back the block explorer has indexed blocks, connect to the database and query to see what is the earliest block it has indexed, if these values change that means earlier and earlier blocks are being indexed (`refetch_needed` indicates whether the indexing was successful)
