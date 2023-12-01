@@ -26,6 +26,7 @@ local:
 	cd blockscout && \
 	docker build ./ -f local.Dockerfile -t ${IMAGE_NAME}:${LOCAL_IMAGE_TAG} --build-arg BLOCKSCOUT_VERSION=${BLOCKSCOUT_DOCKER_VERSION}
 
+
 .PHONY: build-db-exporter
 # build the exporter image
 build-db-exporter:
@@ -82,6 +83,7 @@ restart-postgres:
 .PHONY: reset
 # wipe state and restart the service and all it's dependencies
 reset:
+	rm -rf postgres-data	&& \
 	docker compose up -d --build --remove-orphans --renew-anon-volumes --force-recreate
 
 # wipe just the database state and restart just the database

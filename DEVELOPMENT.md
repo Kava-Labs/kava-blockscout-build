@@ -202,7 +202,18 @@ cd /apps/indexer
 mix deps.get
 # compile sources for just this app
 mix compile
+
+# run the entire blockscout system
+mix run
+
+# run just a specific app
+mix run indexer
 ```
+
+
+Note that you should only run the above commands in the docker container, running them on your host may lead to conflicts in library binaries being different when installed on the host machine and the docker linux environment (if such an issue does occur, blowing away the `/_build` and `deps` in `blockscout-base/` should resolve such conflicts)
+
+Since all dependencies and compiled artifacts are saved to the host, restarting the dev container and re-attaching vs code to it will not require re-fetching deps (unless the dependency list has changed) or re-compiling (unless the source code has changed from the last time it was compiled)
 
 #### Indexer status
 
@@ -288,7 +299,7 @@ count
 1808591
 ```
 
-Query for blockscout database state for a given transaction (removing the `0x` prefix from the transaciton of interest)
+Query for blockscout database state for a given transaction (removing the `0x` prefix from the transaction of interest)
 
 ```sql
 select * from transactions where hash = decode('080a9c8c6bde6320dac69dd8639172aca893d357904f7a1ad37debf17bfec79f','hex');
