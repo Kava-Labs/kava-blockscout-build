@@ -152,6 +152,69 @@ cd ../../
 make refresh
 ```
 
+#### Portable Docker Dev Environment
+
+Requires
+    - vscode
+    - docker
+
+Build an image that has all elixir and node dependnecies to run the app, and all current source code and compiled assets
+
+```bash
+make local
+```
+
+run a docker container using the above image
+
+```bash
+docker run -it -d -v ./blockscout/blockscout-base:/src/blockscout  -v ./blockscout/patches:/src/patches kava-blockscout:local
+
+# apply current patches
+cd /blockscout/blockscout-base && git apply ../patches/*.patch && git add ./ && git commit -m "REVERT-ME-PATCH-COMMIT"
+# REVERT this commit before pushing to origin for a PR)
+```
+
+Attach a [vs code editor dev container](https://code.visualstudio.com/docs/devcontainers/containers) to the running container (open command member, type/select Dev Containers: Attach to running container)
+
+Now any code changes you make inside the container will be persisted on your local machine, and you can use the patch workflow below to upstream your code changes.
+
+Create a patch of your changes to be applied when the development or production docker image is built
+
+```bash
+# from your host machine
+cd /blockcout/blockscout-base
+git diff > ../patches/NAME_OF_PATCH.patch
+```
+
+Some helpful commands
+
+```bash
+# from inside /src/blockscout of dev container
+# fetch dependencies from all apps
+mix deps.get
+# compile sources for all apps (indexer, explorer)
+mix compile
+
+# if you want to just update / compile a single app, such as the indexer
+# from inside /src/blockscout of dev container
+cd /apps/indexer
+# fetch dependencies for just this app
+mix deps.get
+# compile sources for just this app
+mix compile
+
+# run the entire blockscout system
+mix run
+
+# run just a specific app
+mix run indexer
+```
+
+
+Note that you should only run the above commands in the docker container, running them on your host may lead to conflicts in library binaries being different when installed on the host machine and the docker linux environment (if such an issue does occur, blowing away the `/_build` and `deps` in `blockscout-base/` should resolve such conflicts)
+
+Since all dependencies and compiled artifacts are saved to the host, restarting the dev container and re-attaching vs code to it will not require re-fetching deps (unless the dependency list has changed) or re-compiling (unless the source code has changed from the last time it was compiled)
+
 #### Indexer status
 
 To see how far back the block explorer has indexed blocks, connect to the database and query to see what is the earliest block it has indexed, if these values change that means earlier and earlier blocks are being indexed (`refetch_needed` indicates whether the indexing was successful)
@@ -236,7 +299,7 @@ count
 1808591
 ```
 
-Query for blockscout database state for a given transaction (removing the `0x` prefix from the transaciton of interest)
+Query for blockscout database state for a given transaction (removing the `0x` prefix from the transaction of interest)
 
 ```sql
 select * from transactions where hash = decode('080a9c8c6bde6320dac69dd8639172aca893d357904f7a1ad37debf17bfec79f','hex');
