@@ -1,17 +1,17 @@
 diff --git a/apps/explorer/lib/explorer/chain/internal_transaction.ex b/apps/explorer/lib/explorer/chain/internal_transaction.ex
-index c86bfa699f..1b2d0cbac6 100644
+index c86bfa699f..0a08f3a1b2 100644
 --- a/apps/explorer/lib/explorer/chain/internal_transaction.ex
 +++ b/apps/explorer/lib/explorer/chain/internal_transaction.ex
 @@ -3,6 +3,8 @@ defmodule Explorer.Chain.InternalTransaction do
- 
+
    use Explorer.Schema
- 
+
 +  require Logger
 +
    alias Explorer.Chain.{Address, Block, Data, Gas, Hash, PendingBlockOperation, Transaction, Wei}
    alias Explorer.Chain.InternalTransaction.{Action, CallType, Result, Type}
- 
-@@ -502,7 +504,16 @@ defmodule Explorer.Chain.InternalTransaction do
+
+@@ -502,7 +504,15 @@ defmodule Explorer.Chain.InternalTransaction do
    # Validates that :call `type` changeset either has an `error` or both `gas_used` and `output`
    defp validate_call_error_or_result(changeset) do
      case get_field(changeset, :error) do
@@ -19,7 +19,6 @@ index c86bfa699f..1b2d0cbac6 100644
 +      nil ->
 +        if get_field(changeset, :gas_used) == nil && get_field(changeset, :output) == nil do
 +          changeset |>
-+            IO.inspect() |>
 +            Ecto.Changeset.change(
 +              error: "execution reverted"
 +            )
