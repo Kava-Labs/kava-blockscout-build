@@ -31,9 +31,7 @@ Open a PR
 Once PR is approved, merge and new containers will be published via [Github Actions CI](https://github.com/Kava-Labs/kava-blockscout-build/actions/workflows/ci-main.yml). Once CI completes for the newly merged changes, you can find the tag for the image using the below command
 
 ```bash
-⋊> ~/f/k/kava on master ⨯ AWS_PROFILE=shared AWS_REGION=us-east-1 aws ecr describe-i
-mages --repository-name kava-blockscout --query 'sort_by(imageDetails,& imagePushedA
-t)[*].imageTags[*]' --output yaml  | tail -n 3 
+⋊> ~/f/k/kava on master ⨯ AWS_PROFILE=shared AWS_REGION=us-east-1 aws ecr describe-images --repository-name kava-blockscout --query 'sort_by(imageDetails,& imagePushedAt)[*].imageTags[*]' --output yaml  | tail -n 3 
 - - de558c4
 - - 9b81a61
   - latest
