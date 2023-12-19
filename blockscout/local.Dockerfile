@@ -1,5 +1,5 @@
-# Raw version representing v5.3.1-beta
-ARG BLOCKSCOUT_VERSION=5.3.1
+# Raw version representing v5.3.3-beta
+ARG BLOCKSCOUT_VERSION=5.3.3
 
 #
 # The backend-builder uses the official exlixir docker image that contains
