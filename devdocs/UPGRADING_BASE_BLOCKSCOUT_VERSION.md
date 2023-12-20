@@ -28,7 +28,16 @@ Open a PR
 
 [Example PR](https://github.com/Kava-Labs/kava-blockscout-build/pull/19)
 
-Once PR is approved, merge and new containers will be published
+Once PR is approved, merge and new containers will be published via [Github Actions CI](https://github.com/Kava-Labs/kava-blockscout-build/actions/workflows/ci-main.yml). Once CI completes for the newly merged changes, you can find the tag for the image using the below command
+
+```bash
+⋊> ~/f/k/kava on master ⨯ AWS_PROFILE=shared AWS_REGION=us-east-1 aws ecr describe-images --repository-name kava-blockscout --query 'sort_by(imageDetails,& imagePushedAt)[*].imageTags[*]' --output yaml  | tail -n 3 
+- - de558c4
+- - 9b81a61
+  - latest
+```
+
+in the above case the tag `9b81a61` maps to the latest pushed image.
 
 Deploy to production by updating [value for image tag](https://github.com/Kava-Labs/infrastructure/blob/master/terraform/product/production/us-east-1/blockscout-mainnet/service/terragrunt.hcl#L56) and running `terragrunt apply`
 
